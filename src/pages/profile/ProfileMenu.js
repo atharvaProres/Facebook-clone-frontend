@@ -31,5 +31,5 @@ export default function ProfileMenu() {
         </div>
       </div>
     </div>
-  )
+  );
 }

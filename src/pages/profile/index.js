@@ -1,23 +1,23 @@
-import { useParams,useNavigate } from "react-router-dom";
 import axios from "axios";
-import {useEffect, useReducer, useState} from "react";
-import {useSelector} from "react-redux"
+import { useEffect, useReducer, useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import { profileReducer } from "../../functions/reducer";
 import Header from "../../components/header";
 import "./style.css";
-import Cover from "../../components/profile/Cover";
-import ProfilePictureInfos from "../../components/profile/ProfilePictureInfos";
-import ProfileMenu from "../../components/profile/ProfileMenu";
-import PeopleYouMayKnow from "./PeopleYouMayKnow";
+import Cover from "./Cover";
+import ProfielPictureInfos from "./ProfielPictureInfos";
+import ProfileMenu from "./ProfileMenu";
+import PplYouMayKnow from "./PplYouMayKnow";
 import CreatePost from "../../components/createPost";
 import GridPosts from "./GridPosts";
-
-export default function Profile({setVisible}) {
+import Post from "../../components/post";
+export default function Profile({ setVisible }) {
   const { username } = useParams();
   const navigate = useNavigate();
   const { user } = useSelector((state) => ({ ...state }));
   var userName = username === undefined ? user.username : username;
-  
+
   const [{ loading, error, profile }, dispatch] = useReducer(profileReducer, {
     loading: false,
     profile: {},
@@ -26,6 +26,9 @@ export default function Profile({setVisible}) {
   useEffect(() => {
     getProfile();
   }, [userName]);
+  var visitor = userName === user.username ? false : true;
+  console.log(visitor);
+
   const getProfile = async () => {
     try {
       dispatch({
@@ -54,27 +57,41 @@ export default function Profile({setVisible}) {
       });
     }
   };
-  console.log(profile);
-  return <div className="profile">
-    <Header page="profile"/>
-    <div className="profile_top"> 
-      <div className="profile_container"> 
-        <Cover cover={profile.cover}/>
-        <ProfilePictureInfos profile={profile}/>
-        <ProfileMenu/>
-      </div>
-    </div>
-    <div className="profile_bottom">
-      <div className="profile_container"> 
-        <div className="bottom_container"> 
-          <PeopleYouMayKnow/>
-        </div>
-        <div className="profile_left"></div>
-        <div className="profile_right">
-          <CreatePost user={user} profile setVisible={setVisible}/>
-          <GridPosts/>
+  return (
+    <div className="profile">
+      <Header page="profile" />
+      <div className="profile_top">
+        <div className="profile_container">
+          <Cover cover={profile.cover} visitor={visitor} />
+          <ProfielPictureInfos profile={profile} visitor={visitor} />
+          <ProfileMenu />
         </div>
       </div>
+      <div className="profile_bottom">
+        <div className="profile_container">
+          <div className="bottom_container">
+            <PplYouMayKnow />
+            <div className="profile_grid">
+              <div className="profile_left"></div>
+              <div className="profile_right">
+                {!visitor && (
+                  <CreatePost user={user} profile setVisible={setVisible} />
+                )}
+                <GridPosts />
+                <div className="posts">
+                  {profile.posts && profile.posts.length ? (
+                    profile.posts.map((post) => (
+                      <Post post={post} user={user} key={post._id} />
+                    ))
+                  ) : (
+                    <div className="no_posts">No posts available</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  );
 }

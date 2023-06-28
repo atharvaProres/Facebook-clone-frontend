@@ -1,6 +1,4 @@
-import "./style.css"
-
-export default function AddFriendSmallCard({item}) {
+export default function AddFriendSmallCard({ item }) {
   return (
     <div className="addfriendCard">
       <div className="addfriend_imgsmall">
@@ -22,5 +20,5 @@ export default function AddFriendSmallCard({item}) {
         </div>
       </div>
     </div>
-  )
+  );
 }
